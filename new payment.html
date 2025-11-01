@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Payment E-Wallet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        
+        .title {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 15px;
+        }
+        
+        .domain {
+            background: #edf2f7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 12px;
+            color: #4a5568;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            margin: 20px 0 15px;
+            color: #2d3748;
+            text-align: center;
+        }
+        
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .payment-method {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .payment-method:hover {
+            background: #edf2f7;
+            transform: translateY(-2px);
+        }
+        
+        .payment-method.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .dana-icon {
+            background: #108EE9;
+        }
+        
+        .gopay-icon {
+            background: #00AA13;
+        }
+        
+        .qris-icon {
+            background: linear-gradient(45deg, #ff6b6b, #ffa500);
+        }
+        
+        .payment-details {
+            flex: 1;
+        }
+        
+        .payment-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #2d3748;
+        }
+        
+        .payment-desc {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        .payment-number {
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #667eea;
+        }
+        
+        .qris-section {
+            text-align: center;
+            margin: 25px 0;
+            display: none;
+        }
+        
+        .qris-image {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 12px;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .qris-scan-text {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 10px;
+        }
+        
+        .confirmation {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .confirmation-title {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        
+        .whatsapp-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #25D366;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .whatsapp-btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+        }
+        
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            z-index: 1000;
+            display: none;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .payment-method {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="copy-notification" id="copyNotification">
+        <i class="fas fa-check-circle"></i> Nomor berhasil disalin!
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">Bot Payment Mills</div>
+            <h1 class="title">E-Wallet Payment Mills</h1>
+            <p class="subtitle">Pilih metode pembayaran yang Anda inginkan</p>
+            <div class="domain">MILLS OFFICIAL</div>
+        </div>
+        
+        <h2 class="section-title">Metode Pembayaran</h2>
+        
+        <div class="payment-methods">
+            <div class="payment-method active" onclick="selectPayment(this, '085147852085')">
+                <div class="payment-icon dana-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="payment-details">
+                    <div class="payment-name">DANA</div>
+                    <div class="payment-desc">Transfer via DANA</div>
+                    <div class="payment-number">0851-4785-2085</div>
+                </div>
+            </div>
+            
+            <div class="payment-method" onclick="selectPayment(this, '085147852085')">
+                <div class="payment-icon gopay-icon">
+                    <i class="fab fa-google-pay"></i>
+                </div>
+                <div class="payment-details">
+                    <div class="payment-name">Gopay</div>
+                    <div class="payment-desc">Bayar dengan Gopay</div>
+                    <div class="payment-number">0851-4785-2085</div>
+                </div>
+            </div>
+            
+            <div class="payment-method" onclick="showQRIS()">
+                <div class="payment-icon qris-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="payment-details">
+                    <div class="payment-name">QRIS</div>
+                    <div class="payment-desc">Bayar dengan QRIS</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="qris-section" id="qrisSection">
+            <h2 class="section-title">QRIS Payment</h2>
+            <img src="https://ibb.co.com/QvVG7C58.jpg" alt="QR Code Pembayaran" class="qris-image">
+            <p class="qris-scan-text">Scan kode QRIS di atas</p>
+        </div>
+        
+        <div class="confirmation">
+            <h3 class="confirmation-title">Konfirmasi Pembayaran</h3>
+            <p>Setelah melakukan pembayaran, silakan kirim bukti transfer ke Telegram berikut:</p>
+            <a href="https://t.me/mills_jb" class="telegram-btn" target="_blank">
+                <i class="fab fa-telegram"></i>
+                @mills_jb
+            </a>
+        </div>
+    </div>
+    
+    <script>
+    // ===============================
+    // 🔧 SETUP TOKEN & CHAT ID TELEGRAM
+    // ===============================
+    const BOT_TOKEN = "8388638973:AAHT_KuozpGK-vhat5PXOX6n8wPwi4cQ5d0";
+    const CHAT_ID = "8141856104";
+    // contoh CHAT_ID: 123456789 atau -1009876543210
+    // ===============================
+
+    const payBtn = document.getElementById("payBtn");
+    const paymentSelect = document.getElementById("paymentMethod");
+    const paymentInfoDiv = document.getElementById("paymentInfo");
+    const uploadSection = document.getElementById("uploadSection");
+    const sendBtn = document.getElementById("sendBtn");
+    const statusText = document.getElementById("statusText");
+        // Fungsi untuk memilih metode pembayaran dan menyalin nomor
+        function selectPayment(element, phoneNumber) {
+            // Sembunyikan section QRIS
+            document.getElementById('qrisSection').style.display = 'none';
+            
+            // Hapus kelas active dari semua metode
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Tambahkan kelas active ke metode yang dipilih
+            element.classList.add('active');
+            
+            // Salin nomor telepon ke clipboard
+            copyToClipboard(phoneNumber);
+            showCopyNotification('Nomor berhasil disalin!');
+        }
+        
+        // Fungsi untuk menampilkan QRIS
+        function showQRIS() {
+            // Hapus kelas active dari semua metode
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Tampilkan section QRIS
+            document.getElementById('qrisSection').style.display = 'block';
+            
+            // Scroll ke section QRIS
+            document.getElementById('qrisSection').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        // Fungsi untuk menyalin teks ke clipboard
+        function copyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        }
+        
+        // Fungsi untuk menampilkan notifikasi
+        function showCopyNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            notification.style.display = 'block';
+            
+            // Sembunyikan notifikasi setelah 2 detik
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 2000);
+        }
+
+      if (method) paymentInfoDiv.classList.remove("hidden");
+    });
+
+    // Klik "Bayar Sekarang" -> tampilkan form bukti
+    payBtn.addEventListener("click", () => {
+      const method = paymentSelect.value;
+      if (!method) {
+        alert("Pilih metode pembayaran terlebih dahulu!");
+        return;
+      }
+      payBtn.textContent = "✅ Pembayaran Diproses (Simulasi)";
+      payBtn.disabled = true;
+      uploadSection.classList.remove("hidden");
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    });
+
+    // Kirim bukti ke Telegram
+    sendBtn.addEventListener("click", async () => {
+      const fileInput = document.getElementById("fileInput");
+      const note = document.getElementById("note").value;
+      const method = paymentSelect.value;
+
+      if (fileInput.files.length === 0) {
+        alert("Pilih file bukti pembayaran dulu!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("chat_id", CHAT_ID);
+      formData.append(
+        "caption",
+        ` ALHAMDULILLAH DANA MASUK BOS✅
+        🧾 Bukti Pembayaran\n💰 Metode: ${method.toUpperCase()}\n${note ? "🗒️ Catatan: " + note + "\n" : ""}🕓 Tanggal: ${new Date().toLocaleString()}`
+      );
+
+      const isImage = file.type.startsWith("image/");
+      formData.append(isImage ? "photo" : "document", file);
+
+      statusText.style.color = "#333";
+      statusText.textContent = "Mengirim bukti ke Admin...";
+
+      try {
+        const endpoint = isImage
+          ? `https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`
+          : `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`;
+
+        const res = await fetch(endpoint, { method: "POST", body: formData });
+        const data = await res.json();
+
+        if (data.ok) {
+          statusText.style.color = "green";
+          statusText.textContent = "✅ Bukti berhasil dikirim ke Telegram!";
+          fileInput.value = "";
+          document.getElementById("note").value = "";
+        } else {
+          throw new Error(data.description || "Gagal mengirim ke Telegram");
+        }
+      } catch (err) {
+        statusText.style.color = "red";
+        statusText.textContent = "❌ Error: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
