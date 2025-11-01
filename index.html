@@ -309,9 +309,7 @@
     const sendBtn = document.getElementById("sendBtn");
     const statusText = document.getElementById("statusText");
         // Fungsi untuk memilih metode pembayaran dan menyalin nomor
-        function selectPayment(element, phoneNumber) {
-            // Sembunyikan section QRIS
-            document.getElementById('qrisSection').style.display = 'none';
+        function selectPayment(element, phoneNumber)
             
             // Hapus kelas active dari semua metode
             document.querySelectorAll('.payment-method').forEach(el => {
